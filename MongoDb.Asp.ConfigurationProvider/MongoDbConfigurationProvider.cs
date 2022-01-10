@@ -7,6 +7,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace MongoDb.Asp.ConfigurationProvider
@@ -200,7 +201,8 @@ namespace MongoDb.Asp.ConfigurationProvider
                     }
                     
                     Load();
-                    _token.OnReload();
+                    var previousToken = Interlocked.Exchange(ref _token, new ConfigurationReloadToken());
+                    previousToken.OnReload();
                 }
             }
             catch (MongoCommandException)
